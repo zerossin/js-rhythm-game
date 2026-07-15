@@ -1,109 +1,576 @@
+:root {
+    --bg: #0b0a0e;
+    --panel: #16141b;
+    --panel-border: #2a2731;
+    --pink: #ff2e88;
+    --pink-dim: rgba(255, 46, 136, 0.25);
+    --muted: #948da3;
+    --diff-normal: #5ec8ff;
+    --diff-hard: #ffd23f;
+    --diff-maximum: #ff4d6d;
+    --list-gradient-from: #ffd23f;
+    --list-gradient-to: #8a2be2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: url('../images/배경2.jpg') no-repeat center center;
-    background-size: cover;
-    /*background-color: #1a1a1a;*/
+    background: var(--bg);
     color: white;
     overflow: hidden;
 }
 
-.blur-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(1px); /* 블러 강도를 조절할 수 있습니다 */
-    background: rgba(0, 0, 0, 0.76); /* 배경 색상 및 투명도 설정 */
-    z-index: -1;
+/* 선택된 곡의 색을 화면 전체에 흐릿하게 깔아 분위기를 내는 배경층 */
+.atmo-bg {
+    position: fixed;
+    inset: -60px;
+    z-index: -2;
+    filter: blur(70px) brightness(0.35) saturate(0.9);
+    transform: scale(1.1);
+    transition: background 0.4s ease;
 }
 
-.game-container {
+.atmo-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(6, 4, 10, 0.68);
+}
+
+.lobby {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-.head-container {
-    padding: 20px;
+/* ---------- 상단 바 ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--panel-border);
 }
 
+.mode-badge {
+    padding: 4px 14px;
+    border: 1px solid var(--pink);
+    border-radius: 4px;
+    color: var(--pink);
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+}
+
+.sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.key-chip {
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.7rem;
+    color: #cfc9d8;
+}
+
+/* ---------- 본문 ---------- */
 .song-container {
     display: flex;
     flex-direction: row;
-    height: 80%;
+    flex: 1;
+    min-height: 0;
+    gap: 18px;
+    padding: 18px 24px 0;
 }
 
-@media (max-width: 767px) {
-    .song-container {
-        flex-direction: column; /* 모바일 화면에서는 상하 배치 */
-    }
-}
-
-.song-info {
-    width: 30%;
-    padding: 20px;
-}
-
-.song-info img {
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.song-list {
-    flex-grow: 1;
-    padding: 20px;
+/* ---------- 왼쪽: 곡 정보 패널 ---------- */
+.left-panel {
+    flex: 3;
+    min-width: 0;
     overflow-y: auto;
+    padding-right: 4px;
 }
 
-.song-list ul {
+/* 곡 정보 전체를 하나의 네모칸으로 묶고, 그 안을 가로줄로 3구역(키정보/재킷/난이도+점수) 나눔 */
+.info-card {
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+.info-topline {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.mode-tag {
+    display: inline-block;
+    background: linear-gradient(90deg, #8e2de2, var(--pink));
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+.jacket-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-bottom: 1px solid var(--panel-border);
+    overflow: hidden;
+}
+
+.jacket {
+    position: absolute;
+    inset: 0;
+}
+
+.jacket-scrim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.85));
+}
+
+.jacket-overlay {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+}
+
+.jacket-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.jacket-artist {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #d8d3e2;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.jacket-bpm {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: #cfc9d8;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.info-bottom {
+    padding: 14px;
+}
+
+.diff-tabs {
+    display: flex;
+    gap: 6px;
+}
+
+.diff-tab {
+    flex: 1;
+    padding: 6px 4px;
+    border-radius: 4px;
+    background: transparent;
+    font-weight: 800;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.diff-tab[data-diff="NORMAL"] { border: 1px solid var(--diff-normal); color: var(--diff-normal); }
+.diff-tab[data-diff="HARD"] { border: 1px solid var(--diff-hard); color: var(--diff-hard); }
+.diff-tab[data-diff="MAXIMUM"] { border: 1px solid var(--diff-maximum); color: var(--diff-maximum); }
+
+.diff-tab[data-diff="NORMAL"].active { background: var(--diff-normal); color: #04263f; }
+.diff-tab[data-diff="HARD"].active { background: var(--diff-hard); color: #3a2b00; }
+.diff-tab[data-diff="MAXIMUM"].active { background: var(--diff-maximum); color: #3a0010; }
+
+.diff-rating {
+    display: flex;
+    gap: 3px;
+    margin: 8px 0 14px;
+}
+
+.diff-rating span {
+    font-size: 0.85rem;
+}
+
+/* ---------- 스탯 블록 ---------- */
+.stat-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.grade-badge {
+    font-size: 2.3rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--muted);
+}
+
+.stat-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-score {
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.stat-sub {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+/* ---------- 옵션(SPEED) ---------- */
+.option-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.option-tile {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.option-label {
+    display: block;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.option-value-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.speed-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: white;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#speed-value {
+    min-width: 34px;
+    font-weight: 700;
+    color: var(--pink);
+}
+
+/* ---------- 랭킹 ---------- */
+.ranking-box h4 {
+    margin: 0 0 6px 0;
+    color: var(--pink);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.lobby-ranking-list {
+    list-style: none;
+    margin: 0 0 16px 0;
+    padding: 0;
+    font-size: 0.78rem;
+}
+
+.lobby-ranking-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 4px;
+}
+
+.rank-no {
+    color: var(--pink);
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.rank-score {
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.ranking-loading, .ranking-empty {
+    color: #6d6779;
+    justify-content: center !important;
+}
+
+/* ---------- 오른쪽: 곡 리스트 ---------- */
+.right-panel {
+    flex: 7;
+    min-width: 0;
+    overflow-y: auto;
+    position: relative;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.category-tab {
+    padding: 5px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+}
+
+.category-tab.active {
+    border-color: var(--pink);
+    color: white;
+    background: linear-gradient(90deg, var(--list-gradient-from), var(--list-gradient-to));
+}
+
+#songs {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
-.song-list li {
+#songs li {
     position: relative;
     display: flex;
     align-items: center;
-    height: 80px;
-    padding: 10px;
-    margin-bottom: 5px;
+    height: 60px;
+    padding-right: 14px;
+    margin-bottom: 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-.song-list li:hover {
-    background-color: #3a3a3a;
+/* 썸네일 바로 옆에서 시작해 오른쪽 끝까지 깔리는 그라데이션 레이어.
+   평소엔 노란 선 하나만 보이도록 대부분을 clip으로 가려두고,
+   hover/선택 시 clip을 풀어 오른쪽으로 쭉 펼쳐지는 것처럼 보이게 한다. */
+.song-row-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 60px;
+    right: 0;
+    background: linear-gradient(90deg, var(--list-gradient-from) 0%, var(--list-gradient-to) 100%);
+    clip-path: inset(0 calc(100% - 4px) 0 0);
+    transition: clip-path 0.28s ease;
+    pointer-events: none;
 }
 
-.song-list li.selected {
-    background-color: #8e44ad;
+#songs li:hover .song-row-fill,
+#songs li.selected .song-row-fill {
+    clip-path: inset(0 0 0 0);
 }
+
+#songs li.selected .song-row-artist,
+#songs li:hover .song-row-artist {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.song-thumb {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.song-row-info {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+    margin-left: 14px;
+}
+
+.song-row-title {
+    font-weight: bold;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.song-row-artist {
+    color: var(--muted);
+    font-size: 0.74rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.diff-badges {
+    position: relative;
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.diff-badge {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #4a4655;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    color: #6d6779;
+}
+
+.diff-badge.cleared[data-diff="NORMAL"] { background: var(--diff-normal); border-color: var(--diff-normal); color: #04263f; }
+.diff-badge.cleared[data-diff="HARD"] { background: var(--diff-hard); border-color: var(--diff-hard); color: #3a2b00; }
+.diff-badge.cleared[data-diff="MAXIMUM"] { background: var(--diff-maximum); border-color: var(--diff-maximum); color: #3a0010; }
 
 .navigation {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 
 .navigation button {
     display: block;
-    width: 40px;
-    height: 40px;
-    margin-bottom: 10px;
-    background-color: #8e44ad;
-    border: none;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 8px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     cursor: pointer;
 }
 
-.footer-container {
-
+/* ---------- 하단 바 ---------- */
+.bottombar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 10px;
+    border-top: 1px solid var(--panel-border);
+    color: var(--muted);
+    font-size: 0.75rem;
 }
 
-h1, h2 {
-    color: #8e44ad;
+.key-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.keycap {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    color: #e8e4f0;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.keycap-light {
+    border-color: var(--pink);
+    color: var(--pink);
+}
+
+.start-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.start-chip:hover .keycap-light {
+    background: var(--pink-dim);
+}
+
+/* ---------- 모바일 ---------- */
+@media (max-width: 767px) {
+    body {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .lobby {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .song-container {
+        flex-direction: column;
+        height: auto;
+        padding-bottom: 18px;
+    }
+
+    .left-panel {
+        flex: none;
+        width: 100%;
+        overflow-y: visible;
+    }
+
+    .jacket-wrap {
+        aspect-ratio: 16 / 7;
+    }
+
+    .right-panel {
+        flex: none;
+        overflow-y: visible;
+    }
+
+    .navigation {
+        display: none;
+    }
+
+    .bottombar {
+        flex-wrap: wrap;
+        gap: 10px 16px;
+    }
 }

@@ -74,25 +74,17 @@ const gameState = {
 
 // Game Settings
 //////////게임 기본 설정///////////
-const gameSettings = {
-    passCountAll: 80, //쳐야 할 전체 노트 개수
-    makeSpeed: 200, //노트 생성 속도(ms)
-    mujuk: false, //무적여부
-    longNoteTermList: [1, 2, 4, 4], //롱노트 기간 개수
-    noteSpeed: 50 //parseInt(localStorage.getItem('noteSpeed')) || 50
-};
+// 로비(main.js)에서 곡+난이도를 고르면 여기에 저장해둔 값을 그대로 사용한다.
+// 값이 없으면(=rhythm.html을 곧바로 열었을 때) 아래 기본값으로 대체.
+const savedChart = JSON.parse(localStorage.getItem('chart') || 'null');
 
-// Adjust settings based on song number
-const songNum = 0//parseInt(sessionStorage.getItem('songNum'));
-if (songNum === 3) {
-    gameSettings.makeSpeed = 100;
-} else if (songNum === 4) {
-    gameSettings.makeSpeed = 80;
-} else if (songNum === 5) {
-    gameSettings.makeSpeed = 60;
-} else if (songNum === 6) {
-    gameSettings.makeSpeed = 40;
-}
+const gameSettings = {
+    passCountAll: savedChart?.passCountAll ?? 80, //쳐야 할 전체 노트 개수
+    makeSpeed: savedChart?.makeSpeed ?? 200, //노트 생성 속도(ms)
+    mujuk: false, //무적여부
+    longNoteTermList: savedChart?.longNoteTermList ?? [1, 2, 4, 4], //롱노트 기간 개수
+    noteSpeed: parseInt(localStorage.getItem('noteSpeed')) || 50
+};
 
 gameSettings.gameTime = gameSettings.makeSpeed * gameSettings.passCountAll;
 
@@ -216,23 +208,11 @@ function setRandomLine() {
     let longLine = gameState.prevLongNoteYN.includes(true) ? gameState.prevLongNoteYN.findIndex(yn => yn) + 1 : 0; //롱노트가 있는 줄
     let ranLine = Math.floor(Math.random() * 4) + 1;
 
-    if (songNum === 3) {
-        while (ranLine === gameState.ranLine_prev || ranLine === gameState.ranLine_prevprev) {//선택될 라인은 전 라인이나 전전 라인과 같으면 안된다.
-            ranLine = Math.floor(Math.random() * 4) + 1;
-        }
-        gameState.ranLine_prevprev = gameState.ranLine_prev;
-        gameState.ranLine_prev = ranLine;
-    } else if (songNum === 7) {
-        while (ranLine === longLine) { //현재 선택될 라인은 전 라인과 같거나 롱노트 라인과 같으면 안된다.
-            ranLine = Math.floor(Math.random() * 4) + 1;
-        }
-        //억까
-    } else {
-        while (ranLine === gameState.ranLine_prev || ranLine === longLine) { //현재 선택될 라인은 전 라인과 같거나 롱노트 라인과 같으면 안된다.
-            ranLine = Math.floor(Math.random() * 4) + 1;
-        }
-        gameState.ranLine_prev = ranLine;
+    while (ranLine === gameState.ranLine_prev || ranLine === longLine) { //현재 선택될 라인은 전 라인과 같거나 롱노트 라인과 같으면 안된다.
+        ranLine = Math.floor(Math.random() * 4) + 1;
     }
+    gameState.ranLine_prev = ranLine;
+
     return ranLine;
 }
 
@@ -413,12 +393,7 @@ function startTimer() {
         if (gameState.noteCount < gameSettings.passCountAll) {//정해진 개수만 생성
             if (gameState.timeCount % gameSettings.makeSpeed === 0) {//생성 간격마다
                 const line = setRandomLine();
-                if (songNum !== 1 && songNum !== 7) {
-                    handleComplexNoteCreation(line);
-                    //makeNote(line, 'sn');
-                } else {
-                    handleComplexNoteCreation(line);
-                }
+                handleComplexNoteCreation(line);
             }
         }
 
@@ -807,6 +782,6 @@ let timerCD = setInterval(function () {
     theme.style.setProperty('--degCD',degCD);
 }, 100);
 
-//id_songTilte.innerHTML = songList[sessionStorage.getItem('songNum')-1][3];
+domElements.songTitle.innerHTML = savedChart?.title ?? 'RANDOM';
 
 startGame();

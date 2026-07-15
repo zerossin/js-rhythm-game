@@ -7,29 +7,79 @@
     <link rel="stylesheet" href="../css/main.css">
 </head>
 <body>
-    <div class="blur-effect"></div>
-    <div class="game-container">
-        <div class="head-container">
-            <h2>4KEY</h2>
+    <div id="atmo-bg" class="atmo-bg"></div>
+    <div class="atmo-scrim"></div>
+    <div class="lobby">
+        <div class="topbar">
+            <div class="mode-badge">4KEY</div>
+            <div class="sort-bar"><span>☰ 정렬: 곡 제목 (A to Z)</span><span class="key-chip">F4</span></div>
         </div>
+
         <div class="song-container">
-            <div class="song-info">
-                <h2>Song Info</h2>
-                <img id="song-thumbnail" src="" alt="Song Thumbnail">
-                <h3 id="song-title"></h3>
-                <p id="song-artist"></p>
-                <p id="song-difficulty"></p>
-                <p id="song-bpm"></p>
+            <div class="left-panel">
+                <div class="info-card">
+                    <div class="info-topline">
+                        <span class="mode-tag">4 BUTTON TUNES</span>
+                    </div>
+
+                    <div class="jacket-wrap">
+                        <div id="song-jacket" class="jacket"></div>
+                        <div class="jacket-scrim"></div>
+                        <div class="jacket-overlay">
+                            <div id="song-title" class="jacket-title"></div>
+                            <p id="song-artist" class="jacket-artist"></p>
+                            <p id="song-bpm" class="jacket-bpm"></p>
+                        </div>
+                    </div>
+
+                    <div class="info-bottom">
+                        <div id="diff-tabs" class="diff-tabs"></div>
+                        <div id="diff-rating" class="diff-rating"></div>
+
+                        <div class="stat-block">
+                            <div id="grade-badge" class="grade-badge">-</div>
+                            <div class="stat-main">
+                                <div class="stat-score" id="stat-score">-</div>
+                                <div class="stat-sub">
+                                    <span id="stat-rate">RATE --</span>
+                                    <span id="stat-combo">내 순위 --</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-tile">
+                        <span class="option-label">SPEED</span>
+                        <div class="option-value-row">
+                            <button id="speed-down" class="speed-btn">-</button>
+                            <span id="speed-value">5.0</span>
+                            <button id="speed-up" class="speed-btn">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ranking-box">
+                    <h4>랭킹</h4>
+                    <ol id="lobby-ranking-list" class="lobby-ranking-list"></ol>
+                </div>
             </div>
-            <div class="song-list">
+
+            <div class="right-panel">
+                <div id="category-tabs" class="category-tabs"></div>
                 <ul id="songs"></ul>
-            </div>
-            <div class="navigation">
-                <button id="up-button">▲</button>
-                <button id="down-button">▼</button>
+                <div class="navigation">
+                    <button id="up-button">▲</button>
+                    <button id="down-button">▼</button>
+                </div>
             </div>
         </div>
-        <div class="footer-container">
+
+        <div class="bottombar">
+            <span class="key-hint"><span class="keycap">↑ ↓</span>곡 선택</span>
+            <span class="key-hint"><span class="keycap">← →</span>난이도</span>
+            <button id="start-button" class="start-chip"><span class="keycap keycap-light">Enter</span>시작</button>
         </div>
     </div>
     <script src="../js/main.js"></script>
