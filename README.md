@@ -1,6 +1,6 @@
 # js-rhythm-game
 
-[>>리듬게임 테스트<<](https://gitpage.kevalsil.com/js-rhythm-game/)
+[>>리듬게임 테스트<<](https://gitpage.zerossin.com/js-rhythm-game/)
 (pc에서만 작동)
 
 <br>

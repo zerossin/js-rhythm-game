@@ -88,7 +88,7 @@ function updateRatingDisplay(rate) {
 
 // 랭킹 불러오기
 function fetchRankings() {
-    fetch(`https://api.kevalsil.com/rankings?song=${encodeURIComponent(song)}`)
+    fetch(`https://api.zerossin.com/rankings?song=${encodeURIComponent(song)}`)
         .then(response => response.json())
         .then(data => {
             let rankingHtml = '';
@@ -128,7 +128,7 @@ function sendScoreToServer(song, player, score, rate) {
         return;
     }
 
-    fetch('https://api.kevalsil.com/submit-score', {
+    fetch('https://api.zerossin.com/submit-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

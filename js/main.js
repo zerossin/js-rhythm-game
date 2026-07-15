@@ -15,7 +15,7 @@ let nickname = localStorage.getItem('player');
 
 if (!nickname) {
     // 닉네임이 없으면 fetch로 가져와서 닉네임 생성 후 저장
-    fetch('https://raw.githubusercontent.com/kevalsil/js-random-nickname-generator/main/randomNicknameGenerator.js')
+    fetch('https://raw.githubusercontent.com/zerossin/js-random-nickname-generator/main/randomNicknameGenerator.js')
         .then(response => response.text())
         .then(scriptContent => {
             eval(scriptContent);
