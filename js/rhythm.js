@@ -784,4 +784,8 @@ let timerCD = setInterval(function () {
 
 domElements.songTitle.innerHTML = savedChart?.title ?? 'RANDOM';
 
+if (savedChart?.gradient) {
+    document.getElementById('atmo-bg').style.background = `linear-gradient(135deg, ${savedChart.gradient[0]}, ${savedChart.gradient[1]})`;
+}
+
 startGame();

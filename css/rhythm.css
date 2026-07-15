@@ -9,6 +9,27 @@ html {
     font-size: 100%; /* 기본 크기 */
 }
 
+body {
+    margin: 0;
+    background: #0b0a0e;
+}
+
+/* 로비에서 고른 곡의 색을 게임 화면까지 그대로 이어지게 하는 배경층 (main.css와 동일 로직) */
+.atmo-bg {
+    position: fixed;
+    inset: -60px;
+    z-index: -2;
+    filter: blur(70px) brightness(0.35) saturate(0.9);
+    transform: scale(1.1);
+}
+
+.atmo-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(6, 4, 10, 0.68);
+}
+
 @media (max-width: 768px) {
     html {
         font-size: 70%; /* 모바일에서는 기본 크기를 70%로 줄임 */

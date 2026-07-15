@@ -5,9 +5,9 @@
     --pink: #ff2e88;
     --pink-dim: rgba(255, 46, 136, 0.25);
     --muted: #948da3;
+    --diff-easy: #4ade80;
     --diff-normal: #5ec8ff;
-    --diff-hard: #ffd23f;
-    --diff-maximum: #ff4d6d;
+    --diff-hard: #ff4d6d;
     --list-gradient-from: #ffd23f;
     --list-gradient-to: #8a2be2;
 }
@@ -104,9 +104,31 @@ body {
 /* 곡 정보 전체를 하나의 네모칸으로 묶고, 그 안을 가로줄로 3구역(키정보/재킷/난이도+점수) 나눔 */
 .info-card {
     border: 1px solid var(--panel-border);
-    border-radius: 10px;
+    border-radius: 0;
     background: rgba(255, 255, 255, 0.02);
     overflow: hidden;
+}
+
+.empty-info-message {
+    display: none;
+    padding: 40px 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.info-card.empty > *:not(.empty-info-message) {
+    display: none;
+}
+
+.info-card.empty .empty-info-message {
+    display: block;
+}
+
+.left-panel.empty-theme .option-row,
+.left-panel.empty-theme .ranking-box {
+    display: none;
 }
 
 .info-topline {
@@ -136,6 +158,34 @@ body {
 .jacket {
     position: absolute;
     inset: 0;
+}
+
+/* HARD 난이도일 때만 잔잔하게 떠오르는 잔불 입자. 은은하게 — 글로우/블러 없음 */
+.diff-particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    left: var(--x, 50%);
+    bottom: 10%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--diff-hard);
+    opacity: 0;
+    animation: particleRise var(--duration, 4s) linear infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes particleRise {
+    0% { transform: translate(0, 0); opacity: 0; }
+    15% { opacity: 0.9; }
+    85% { opacity: 0.5; }
+    100% { transform: translate(var(--drift, 0), -220px); opacity: 0; }
 }
 
 .jacket-scrim {
@@ -183,24 +233,31 @@ body {
     gap: 6px;
 }
 
+/* 선택 안 된 탭은 전부 무채색으로 죽이고, 선택된 탭만 그 난이도 색을 드러낸다.
+   (색으로 구분이 잘 안 된다는 피드백 반영 — 대비를 색상 차이가 아니라 유채/무채 차이로 만듦) */
 .diff-tab {
     flex: 1;
     padding: 6px 4px;
     border-radius: 4px;
+    border: 1px solid var(--panel-border);
     background: transparent;
+    color: var(--muted);
     font-weight: 800;
     font-size: 0.68rem;
     letter-spacing: 1px;
     cursor: pointer;
 }
 
-.diff-tab[data-diff="NORMAL"] { border: 1px solid var(--diff-normal); color: var(--diff-normal); }
-.diff-tab[data-diff="HARD"] { border: 1px solid var(--diff-hard); color: var(--diff-hard); }
-.diff-tab[data-diff="MAXIMUM"] { border: 1px solid var(--diff-maximum); color: var(--diff-maximum); }
+.diff-tab.disabled {
+    border-style: dashed;
+    color: #4a4655;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 
-.diff-tab[data-diff="NORMAL"].active { background: var(--diff-normal); color: #04263f; }
-.diff-tab[data-diff="HARD"].active { background: var(--diff-hard); color: #3a2b00; }
-.diff-tab[data-diff="MAXIMUM"].active { background: var(--diff-maximum); color: #3a0010; }
+.diff-tab[data-diff="EASY"].active { background: var(--diff-easy); border-color: var(--diff-easy); color: #04331b; }
+.diff-tab[data-diff="NORMAL"].active { background: var(--diff-normal); border-color: var(--diff-normal); color: #04263f; }
+.diff-tab[data-diff="HARD"].active { background: var(--diff-hard); border-color: var(--diff-hard); color: #3a0010; }
 
 .diff-rating {
     display: flex;
@@ -344,28 +401,33 @@ body {
     position: relative;
 }
 
+/* 곡목록과 같은 너비의 바 하나. 그 안에 테마 버튼들이 둥글기 없이 딱딱 붙어 나열됨 */
 .category-tabs {
     display: flex;
-    gap: 8px;
+    border: 1px solid var(--panel-border);
     margin-bottom: 14px;
 }
 
 .category-tab {
-    padding: 5px 14px;
-    border-radius: 4px;
-    border: 1px solid var(--panel-border);
-    background: transparent;
-    color: var(--muted);
+    flex: 1;
+    padding: 7px 10px;
+    border: none;
+    border-right: 1px solid var(--panel-border);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.45);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     cursor: pointer;
+    text-align: center;
+}
+
+.category-tab:last-child {
+    border-right: none;
 }
 
 .category-tab.active {
-    border-color: var(--pink);
-    color: white;
-    background: linear-gradient(90deg, var(--list-gradient-from), var(--list-gradient-to));
+    color: #000;
 }
 
 #songs {
@@ -416,6 +478,16 @@ body {
     flex-shrink: 0;
 }
 
+.add-song-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed var(--panel-border);
+    color: var(--muted);
+    font-size: 1.6rem;
+}
+
 .song-row-info {
     position: relative;
     display: flex;
@@ -460,9 +532,16 @@ body {
     color: #6d6779;
 }
 
+/* 이 곡엔 애초에 없는 난이도 자리 — 난이도 탭의 '비활성' 언어와 통일 */
+.diff-badge.unavailable {
+    border-style: dashed;
+    border-color: #3a3642;
+    color: #3a3642;
+}
+
+.diff-badge.cleared[data-diff="EASY"] { background: var(--diff-easy); border-color: var(--diff-easy); color: #04331b; }
 .diff-badge.cleared[data-diff="NORMAL"] { background: var(--diff-normal); border-color: var(--diff-normal); color: #04263f; }
-.diff-badge.cleared[data-diff="HARD"] { background: var(--diff-hard); border-color: var(--diff-hard); color: #3a2b00; }
-.diff-badge.cleared[data-diff="MAXIMUM"] { background: var(--diff-maximum); border-color: var(--diff-maximum); color: #3a0010; }
+.diff-badge.cleared[data-diff="HARD"] { background: var(--diff-hard); border-color: var(--diff-hard); color: #3a0010; }
 
 .navigation {
     position: absolute;
