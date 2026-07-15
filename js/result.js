@@ -96,7 +96,7 @@ function fetchRankings() {
             
             data.forEach((rank, index) => {
                 // 방금 플레이한 점수와 비교하여 랭킹 안에 있으면 노란색 강조
-                const isCurrentPlayer = (rank.player === player && rank.score === score && rank.rate === rate);
+                const isCurrentPlayer = (rank.player === player && Number(rank.score) === Number(score) && Number(rank.rate) === Number(rate));
                 
                 rankingHtml += `<li style="color: ${isCurrentPlayer ? 'yellow' : 'white'}">
                     ${index + 1}. ${rank.player} - ${rank.score}점, rate: ${rank.rate}%
